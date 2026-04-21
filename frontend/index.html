@@ -1,0 +1,2088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IHCL AI — Staff Intelligence Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a16;
+      --surface: #111124;
+      --surface2: #181830;
+      --surface3: #1e1e38;
+      --accent: #c9a96e;
+      --accent-dim: rgba(201, 169, 110, 0.12);
+      --accent-border: rgba(201, 169, 110, 0.25);
+      --text: #f0ece3;
+      --text-muted: #7a7060;
+      --text-dim: #4a4535;
+      --danger: #ff8d63;
+      --danger-dim: rgba(255, 141, 99, 0.14);
+      --danger-border: rgba(255, 141, 99, 0.3);
+      --warning: #dfac47;
+      --warning-dim: rgba(223, 172, 71, 0.14);
+      --warning-border: rgba(223, 172, 71, 0.35);
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.03), transparent 25%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 22%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Inter", sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 10%, var(--accent-dim), transparent 26%),
+        radial-gradient(circle at 85% 0%, rgba(255, 255, 255, 0.03), transparent 18%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    button, input, textarea, .header, .tabbar, .notice-banner, .panel-card,
+    .message-bubble, .chip, .input-shell, .overlay-card, .property-btn, .tab,
+    .section-card, .meta-pill, .support-hero, .emergency-bar {
+      transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.15s ease;
+    }
+
+    button, input, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app-shell {
+      position: relative;
+      height: 100vh;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sticky-shell {
+      position: sticky;
+      top: 0;
+      z-index: 25;
+      backdrop-filter: blur(16px);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 85%),
+        color-mix(in srgb, var(--bg) 94%, black 6%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .header {
+      height: 64px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 24px;
+      animation: headerIn 0.5s ease forwards;
+    }
+
+    .property-switch {
+      justify-self: start;
+      display: flex;
+      align-items: stretch;
+      gap: 18px;
+      height: 100%;
+    }
+
+    .property-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      font-weight: 500;
+      text-transform: uppercase;
+      padding: 0;
+      border-bottom: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    .property-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .brand-lockup {
+      justify-self: center;
+      text-align: center;
+      line-height: 1.1;
+    }
+
+    .brand-title {
+      font-family: "Playfair Display", serif;
+      font-size: 20px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+
+    .brand-subtitle {
+      margin-top: 4px;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .tabbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 24px;
+      height: 52px;
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .tab {
+      height: 100%;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 16px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab.highlighted {
+      background: linear-gradient(180deg, transparent, var(--accent-dim));
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+
+    .tab.hidden {
+      display: none;
+    }
+
+    .notice-banner {
+      padding: 10px 24px;
+      background: var(--accent-dim);
+      border-bottom: 0.5px solid var(--accent-border);
+      color: color-mix(in srgb, var(--accent) 78%, transparent);
+      font-size: 12px;
+    }
+
+    .notice-label {
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-right: 10px;
+      opacity: 0.78;
+    }
+
+    .main {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel {
+      display: none;
+      height: 100%;
+      min-height: 0;
+      width: 100%;
+      animation: panelIn 0.4s ease forwards;
+    }
+
+    .panel.active {
+      display: flex;
+    }
+
+    .panel-shell {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      padding: 18px 24px 24px;
+    }
+
+    .panel-card {
+      height: 100%;
+      min-height: 0;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 16%), var(--surface);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .chat-panel {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .chat-area {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .welcome-state {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 32px 12px 40px;
+    }
+
+    .welcome-inner {
+      max-width: 760px;
+    }
+
+    .hero-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 18px;
+      border-radius: 24px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.04), transparent 55%),
+        var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+    }
+
+    .welcome-title {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(32px, 4vw, 44px);
+      line-height: 1.12;
+      margin: 0 0 10px;
+      letter-spacing: 0.01em;
+    }
+
+    .welcome-copy {
+      max-width: 640px;
+      margin: 0 auto;
+      color: rgba(240, 236, 227, 0.74);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    .chip {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      background: var(--surface2);
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .chip:hover {
+      border-color: var(--accent-border);
+      color: var(--accent);
+      background: var(--accent-dim);
+      transform: translateY(-2px);
+    }
+
+    .message-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: messageIn 0.25s ease forwards;
+    }
+
+    .message-row.user {
+      align-items: flex-end;
+    }
+
+    .message-row.assistant {
+      align-items: flex-start;
+    }
+
+    .message-bubble {
+      padding: 14px 16px;
+      border-radius: 18px;
+      line-height: 1.7;
+      font-size: 14px;
+      white-space: normal;
+      word-break: break-word;
+      max-width: 680px;
+    }
+
+    .message-row.user .message-bubble {
+      max-width: 560px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-bottom-right-radius: 4px;
+    }
+
+    .message-row.assistant .message-bubble {
+      background: var(--surface2);
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      border-left: 2px solid var(--accent);
+      border-bottom-left-radius: 4px;
+    }
+
+    .message-bubble p {
+      margin: 0 0 10px;
+    }
+
+    .message-bubble p:last-child {
+      margin-bottom: 0;
+    }
+
+    .message-bubble ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .source-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.25s ease 0.3s, transform 0.25s ease 0.3s;
+    }
+
+    .source-tags.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .source-tag {
+      background: var(--surface3);
+      color: var(--text-dim);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 11px;
+      letter-spacing: 0.02em;
+    }
+
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      border-left: 2px solid var(--accent);
+      background: var(--surface2);
+      border-bottom-left-radius: 4px;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.45;
+      animation: pulse 1s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .input-shell {
+      padding: 16px 20px 20px;
+      border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 40%),
+        var(--surface);
+    }
+
+    .input-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+    }
+
+    .chat-input {
+      flex: 1;
+      min-height: 52px;
+      max-height: 120px;
+      resize: none;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: var(--surface2);
+      color: var(--text);
+      padding: 14px 16px;
+      line-height: 1.5;
+      outline: none;
+    }
+
+    .chat-input::placeholder,
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .chat-input:focus,
+    .field input:focus,
+    .field textarea:focus,
+    .auth-input:focus {
+      border-color: var(--accent-border);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02), 0 0 0 4px var(--accent-dim);
+      outline: none;
+    }
+
+    .send-btn,
+    .primary-btn,
+    .copy-btn,
+    .auth-btn {
+      border-radius: 16px;
+      border: 1px solid var(--accent-border);
+      background: var(--accent-dim);
+      color: var(--accent);
+      padding: 14px 18px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .send-btn {
+      min-width: 98px;
+      height: 52px;
+    }
+
+    .send-btn:disabled,
+    .primary-btn:disabled,
+    .copy-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .support-hero {
+      padding: 24px 24px 14px;
+      border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+      background:
+        radial-gradient(circle at top right, var(--accent-dim), transparent 38%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 48%);
+    }
+
+    .support-title {
+      margin: 0;
+      font-family: "Playfair Display", serif;
+      font-size: 28px;
+      color: var(--text);
+    }
+
+    .support-subtitle {
+      margin-top: 6px;
+      color: rgba(240, 236, 227, 0.7);
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .emergency-bar {
+      margin-bottom: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--warning-border);
+      background: var(--warning-dim);
+      color: var(--warning);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .brief-layout {
+      display: flex;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .brief-sidebar {
+      width: 380px;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      border-right: 0.5px solid rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .brief-form {
+      flex: 1;
+      min-height: 0;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .brief-actions {
+      flex: 0 0 auto;
+      padding: 16px 24px 24px;
+      border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 70%),
+        var(--surface);
+    }
+
+    .brief-content {
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      padding: 24px;
+      overflow-y: auto;
+      background:
+        radial-gradient(circle at top right, var(--accent-dim), transparent 22%),
+        var(--surface);
+    }
+
+    .brief-heading {
+      margin: 0 0 8px;
+      font-family: "Playfair Display", serif;
+      font-size: 28px;
+    }
+
+    .brief-copy {
+      margin: 0 0 24px;
+      color: rgba(240, 236, 227, 0.72);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .field input,
+    .field textarea,
+    .auth-input {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      background: var(--surface2);
+      color: var(--text);
+      padding: 14px 16px;
+      line-height: 1.5;
+      resize: vertical;
+    }
+
+    .field textarea {
+      min-height: 98px;
+    }
+
+    .field-note {
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .field-note.alert {
+      color: var(--danger);
+    }
+
+    .field-note.italic {
+      color: rgba(240, 236, 227, 0.56);
+      font-style: italic;
+    }
+
+    .primary-btn {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .brief-empty,
+    .brief-loading {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 32px;
+    }
+
+    .brief-empty .hero-icon,
+    .brief-loading .hero-icon {
+      margin-bottom: 16px;
+    }
+
+    .brief-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 18px;
+    }
+
+    .brief-title {
+      margin: 0;
+      font-family: "Playfair Display", serif;
+      font-size: 30px;
+      line-height: 1.15;
+    }
+
+    .brief-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .meta-pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      color: rgba(240, 236, 227, 0.68);
+      font-size: 12px;
+    }
+
+    .allergy-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      border-radius: 18px;
+      border: 1px solid var(--warning-border);
+      background: linear-gradient(180deg, rgba(223, 172, 71, 0.16), rgba(223, 172, 71, 0.12));
+      color: #ffd28a;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .allergy-banner svg {
+      flex: 0 0 auto;
+    }
+
+    .brief-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-card {
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 30%), var(--surface2);
+      padding: 18px 18px 18px 20px;
+      border-left: 4px solid var(--accent);
+      animation: sectionIn 0.45s ease forwards;
+      animation-delay: var(--delay, 0ms);
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .section-card.alert-section {
+      box-shadow: 0 0 0 1px rgba(223, 172, 71, 0.12), 0 18px 40px rgba(223, 172, 71, 0.08);
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(240, 236, 227, 0.88);
+    }
+
+    .section-body {
+      color: rgba(240, 236, 227, 0.82);
+      line-height: 1.75;
+      font-size: 14px;
+    }
+
+    .section-body p {
+      margin: 0 0 10px;
+    }
+
+    .section-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .warning-inline {
+      display: inline-block;
+      padding: 2px 8px;
+      margin-right: 6px;
+      border-radius: 999px;
+      background: var(--warning-dim);
+      border: 1px solid var(--warning-border);
+      color: var(--warning);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .brief-footer {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid var(--accent-border);
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 12px;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .spinner {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.08);
+      border-top-color: var(--accent);
+      animation: spin 0.9s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.04), transparent 24%),
+        linear-gradient(180deg, rgba(10, 10, 22, 0.72), rgba(10, 10, 22, 0.94)),
+        var(--bg);
+      backdrop-filter: blur(12px);
+    }
+
+    .auth-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .overlay-card {
+      width: min(340px, 100%);
+      padding: 40px;
+      border-radius: 14px;
+      border: 1px solid var(--accent-border);
+      background:
+        radial-gradient(circle at top right, var(--accent-dim), transparent 46%),
+        var(--surface);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .overlay-card.shake {
+      animation: shake 0.4s linear;
+    }
+
+    .overlay-kicker {
+      color: var(--text-muted);
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .overlay-title {
+      margin: 0;
+      font-family: "Playfair Display", serif;
+      font-size: 34px;
+      line-height: 1.08;
+      color: var(--accent);
+    }
+
+    .overlay-subtitle {
+      margin: 10px 0 22px;
+      color: rgba(240, 236, 227, 0.62);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      line-height: 1.6;
+    }
+
+    .auth-input {
+      text-align: center;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+    }
+
+    .auth-btn {
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .auth-error {
+      min-height: 18px;
+      color: var(--danger);
+      font-size: 13px;
+      visibility: hidden;
+    }
+
+    .auth-error.visible {
+      visibility: visible;
+    }
+
+    .overlay-footer {
+      margin-top: 16px;
+      color: var(--text-dim);
+      font-size: 10px;
+      line-height: 1.7;
+    }
+
+    .muted {
+      color: rgba(240, 236, 227, 0.62);
+    }
+
+    .bold {
+      font-weight: 600;
+    }
+
+    @keyframes headerIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes panelIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes messageIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes sectionIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 80%, 100% {
+        opacity: 0.35;
+        transform: scale(0.86);
+      }
+      40% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      12.5% { transform: translateX(-8px); }
+      25% { transform: translateX(8px); }
+      37.5% { transform: translateX(-8px); }
+      50% { transform: translateX(8px); }
+      62.5% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+      87.5% { transform: translateX(-8px); }
+      100% { transform: translateX(0); }
+    }
+
+    @media (max-width: 1024px) {
+      .header {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        height: auto;
+        padding: 16px 18px;
+      }
+
+      .property-switch,
+      .brand-lockup {
+        justify-self: center;
+      }
+
+      .tabbar,
+      .notice-banner,
+      .panel-shell {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .brief-layout {
+        flex-direction: column;
+      }
+
+      .brief-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        overflow: auto;
+      }
+
+      .app-shell {
+        height: auto;
+        min-height: 100svh;
+      }
+
+      .tabbar {
+        overflow-x: auto;
+      }
+
+      .panel-shell {
+        padding-top: 14px;
+        padding-bottom: 18px;
+      }
+
+      .chat-area,
+      .brief-content,
+      .brief-form,
+      .brief-sidebar {
+        padding: 18px;
+      }
+
+      .brief-sidebar {
+        padding: 0;
+      }
+
+      .brief-actions {
+        padding: 14px 18px 18px;
+      }
+
+      .message-bubble,
+      .message-row.assistant .message-bubble,
+      .message-row.user .message-bubble {
+        max-width: 100%;
+      }
+
+      .support-hero {
+        padding: 20px 18px 12px;
+      }
+
+      .input-shell {
+        padding: 14px 16px 16px;
+      }
+
+      .input-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .send-btn {
+        width: 100%;
+      }
+
+      .brief-header {
+        flex-direction: column;
+      }
+
+      .overlay-card {
+        padding: 28px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-overlay" id="authOverlay">
+    <div class="overlay-card" id="authCard">
+      <div class="overlay-kicker">IHCL</div>
+      <h1 class="overlay-title" id="authTitle">THE PIERRE AI</h1>
+      <div class="overlay-subtitle" id="authSubtitle">Staff Intelligence Suite</div>
+      <input
+        id="passwordInput"
+        class="auth-input"
+        type="password"
+        placeholder="ENTER ACCESS PASSWORD"
+        autocomplete="current-password"
+      />
+      <button class="auth-btn" id="authButton">Access</button>
+      <div class="auth-error" id="authError">Incorrect password</div>
+      <div class="overlay-footer">Proof of Concept · Built by Anish Shirodkar · MS CS, Rutgers University</div>
+    </div>
+  </div>
+
+  <div class="app-shell">
+    <div class="sticky-shell">
+      <header class="header">
+        <div class="property-switch">
+          <button class="property-btn active" id="pierreBtn" type="button">THE PIERRE</button>
+          <button class="property-btn" id="amaBtn" type="button">AMÃ STAYS</button>
+        </div>
+        <div class="brand-lockup">
+          <div class="brand-title">IHCL AI</div>
+          <div class="brand-subtitle">Staff Intelligence Suite</div>
+        </div>
+      </header>
+
+      <nav class="tabbar">
+        <button class="tab active" id="copilotTab" type="button">Staff Co-pilot</button>
+        <button class="tab" id="briefTab" type="button">Guest Brief Generator</button>
+        <button class="tab hidden" id="supportTab" type="button">Guest Support</button>
+      </nav>
+
+      <div class="notice-banner">
+        <span class="notice-label">Proof of Concept — Public Data Only</span>
+        <span id="noticeText">Running on public data from thepierreny.com. Full version connects to IHCL PMS, CRM, and Azure Data Lake.</span>
+      </div>
+    </div>
+
+    <main class="main">
+      <section class="panel active" id="copilotPanel">
+        <div class="panel-shell">
+          <div class="panel-card chat-panel">
+            <div class="chat-area" id="copilotMessages"></div>
+            <div class="input-shell">
+              <div class="input-row">
+                <textarea
+                  class="chat-input"
+                  id="copilotInput"
+                  placeholder="Ask about policies, dining, events, concierge recommendations, or local guidance..."
+                ></textarea>
+                <button class="send-btn" id="copilotSend" type="button">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="briefPanel">
+        <div class="panel-shell">
+          <div class="panel-card brief-layout">
+            <aside class="brief-sidebar">
+              <div class="brief-form">
+                <h2 class="brief-heading">Guest Brief Generator</h2>
+                <p class="brief-copy">Generate a property-specific pre-arrival brief from the same platform. The structure, tone, and operational focus change automatically when you switch properties.</p>
+
+                <div class="field">
+                  <label for="guestName">Guest Name</label>
+                  <input id="guestName" type="text" placeholder="Jane Doe" />
+                </div>
+
+                <div class="field">
+                  <label for="occasion">Occasion / Purpose of Visit</label>
+                  <input id="occasion" type="text" placeholder="Anniversary weekend" />
+                </div>
+
+                <div class="field">
+                  <label for="arrival">Arrival</label>
+                  <input id="arrival" type="text" placeholder="Friday, 4:00 PM" />
+                </div>
+
+                <div class="field">
+                  <label for="departure">Departure</label>
+                  <input id="departure" type="text" placeholder="Sunday, 11:00 AM" />
+                </div>
+
+                <div class="field">
+                  <label for="roomType">Accommodation Type</label>
+                  <input id="roomType" type="text" placeholder="Suite" />
+                </div>
+
+                <div class="field">
+                  <label for="numGuests">Number of Guests</label>
+                  <input id="numGuests" type="text" placeholder="2" />
+                </div>
+
+                <div class="field">
+                  <label for="dietary">Dietary Restrictions / Allergies</label>
+                  <input id="dietary" type="text" placeholder="Shellfish allergy, vegetarian preference" />
+                  <div class="field-note alert">Allergies will be flagged prominently</div>
+                </div>
+
+                <div class="field">
+                  <label for="preferences">Known Preferences</label>
+                  <textarea id="preferences" placeholder="Quiet room, strong coffee, evening jazz, botanical experiences..."></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="pastStays">Past Stay Notes</label>
+                  <textarea id="pastStays" placeholder="Proof of concept note: production version would pull PMS/CRM history automatically."></textarea>
+                  <div class="field-note italic">Production version would use real PMS history, loyalty notes, and prior-stay service recovery data.</div>
+                </div>
+
+                <div class="field">
+                  <label for="specialRequests">Special Requests</label>
+                  <textarea id="specialRequests" placeholder="Airport transfer, anniversary setup, child-friendly meal timing..."></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="additionalNotes">Additional Notes</label>
+                  <textarea id="additionalNotes" placeholder="Any staff context or interview-demo specifics to highlight..."></textarea>
+                </div>
+              </div>
+
+              <div class="brief-actions">
+                <button class="primary-btn" id="generateBriefBtn" type="button">Generate Brief</button>
+              </div>
+            </aside>
+
+            <section class="brief-content" id="briefOutput"></section>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="supportPanel">
+        <div class="panel-shell">
+          <div class="panel-card chat-panel">
+            <div class="support-hero">
+              <h2 class="support-title">24/7 Guest Support</h2>
+              <div class="support-subtitle">Serenity Bungalow, Coorg</div>
+            </div>
+            <div class="chat-area" id="supportMessages"></div>
+            <div class="input-shell">
+              <div class="emergency-bar">Emergency: Estate Manager (24/7) | Cauvery Hospital: 18 min</div>
+              <div class="input-row">
+                <textarea
+                  class="chat-input"
+                  id="supportInput"
+                  placeholder="Ask about WiFi, dinner timing, wildlife safety, local help, or late-night property questions..."
+                ></textarea>
+                <button class="send-btn" id="supportSend" type="button">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    let password = "";
+    let currentProperty = "pierre";
+    let activeTab = "copilot";
+    let chatHistory = [];
+    let isStreaming = false;
+    let activeAssistantBubble = null;
+    let activeAssistantSources = null;
+    let activeAssistantText = "";
+    let activePanelType = "copilot";
+
+    const chatStore = {
+      copilot: [],
+      support: [],
+    };
+
+    const themes = {
+      pierre: {
+        "--bg": "#0a0a16",
+        "--surface": "#111124",
+        "--surface2": "#181830",
+        "--surface3": "#1e1e38",
+        "--accent": "#c9a96e",
+        "--accent-dim": "rgba(201,169,110,0.12)",
+        "--accent-border": "rgba(201,169,110,0.25)",
+        "--text": "#f0ece3",
+        "--text-muted": "#7a7060",
+        "--text-dim": "#4a4535",
+      },
+      ama: {
+        "--bg": "#0a0d08",
+        "--surface": "#111408",
+        "--surface2": "#181c0e",
+        "--surface3": "#1e2214",
+        "--accent": "#8fad5a",
+        "--accent-dim": "rgba(143,173,90,0.12)",
+        "--accent-border": "rgba(143,173,90,0.25)",
+        "--text": "#f0ede3",
+        "--text-muted": "#7a7860",
+        "--text-dim": "#4a4835",
+      }
+    };
+
+    const propertyConfig = {
+      pierre: {
+        authTitle: "THE PIERRE AI",
+        authSubtitle: "Staff Intelligence Suite",
+        displayName: "The Pierre, A Taj Hotel",
+        notice: "Running on public data from thepierreny.com. Full version connects to IHCL PMS, CRM, and Azure Data Lake.",
+        heroTitle: "Ask me anything about The Pierre, A Taj Hotel",
+        heroCopy: "I know the hotel's public operating knowledge across dining, event spaces, policies, concierge context, and the surrounding Upper East Side. I cannot access guest history, reservation systems, or live availability in this proof of concept.",
+        supportHeroTitle: "24/7 Guest Support",
+        supportHeroSubtitle: "Serenity Bungalow, Coorg",
+        icon: "key",
+        chips: [
+          "What time does Perrine close?",
+          "Michelin restaurants nearby?",
+          "Cotillion Room capacity?",
+          "Pet policy?",
+          "Live jazz at Two E?",
+          "Check-in and check-out times?"
+        ],
+        briefPlaceholder: "Suite",
+        briefEmptyTitle: "Create a polished arrival brief",
+        briefEmptyCopy: "Enter guest details on the left to generate a structured pre-arrival brief tailored for front office, concierge, F&B, and housekeeping."
+      },
+      ama: {
+        authTitle: "STAFF INTELLIGENCE SUITE",
+        authSubtitle: "amã Stays & Trails",
+        displayName: "Serenity Bungalow, Coorg",
+        notice: "Running on curated property data. Full version connects to IHCL booking system and property management platform.",
+        heroTitle: "Ask me anything about Serenity Bungalow, Coorg",
+        heroCopy: "I know the curated property guide, guest guide, FAQ, and local Coorg recommendations. I can help with practical support, but not real-time booking system data or individual guest records in this proof of concept.",
+        supportHeroTitle: "24/7 Guest Support",
+        supportHeroSubtitle: "Serenity Bungalow, Coorg",
+        icon: "leaf",
+        chips: [
+          "What if the power goes out at night?",
+          "Is there WiFi?",
+          "What is included in the stay?",
+          "Nearest hospital?",
+          "What time is dinner?",
+          "Wildlife safety tips?"
+        ],
+        supportChips: [
+          "The power just went out",
+          "WiFi password please",
+          "What time is dinner tonight?",
+          "Is there a doctor nearby?",
+          "I saw a large animal outside",
+          "Where can I eat vegetarian food nearby?"
+        ],
+        briefPlaceholder: "Full Property",
+        briefEmptyTitle: "Generate a host preparation note",
+        briefEmptyCopy: "Switching to amã automatically changes the brief structure to property setup, meals, local recommendations, and a warm host welcome note."
+      }
+    };
+
+    const panels = {
+      copilot: document.getElementById("copilotPanel"),
+      brief: document.getElementById("briefPanel"),
+      support: document.getElementById("supportPanel"),
+    };
+
+    const tabs = {
+      copilot: document.getElementById("copilotTab"),
+      brief: document.getElementById("briefTab"),
+      support: document.getElementById("supportTab"),
+    };
+
+    const messageAreas = {
+      copilot: document.getElementById("copilotMessages"),
+      support: document.getElementById("supportMessages"),
+    };
+
+    const inputs = {
+      copilot: document.getElementById("copilotInput"),
+      support: document.getElementById("supportInput"),
+    };
+
+    const sendButtons = {
+      copilot: document.getElementById("copilotSend"),
+      support: document.getElementById("supportSend"),
+    };
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function getIconSvg(type, size = 28) {
+      if (type === "leaf") {
+        return `
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M18.4 5.4c-3.7-.4-7 1.1-9.1 3.4-2 2.2-2.8 5.1-2.4 8.2 3.1.5 5.9-.3 8.2-2.3 2.3-2.1 3.9-5.4 3.3-9.3Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 15c1.7-1.2 3.5-2.7 5.5-4.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        `;
+      }
+      if (type === "spark") {
+        return `
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 3l1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M18.5 3.5 19 5l1.5.5-1.5.5-.5 1.5-.5-1.5-1.5-.5L18 5l.5-1.5Z" stroke="currentColor" stroke-width="1.2"/>
+          </svg>
+        `;
+      }
+      if (type === "warning") {
+        return `
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 4 20 19H4l8-15Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M12 9v4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="12" cy="16.8" r=".8" fill="currentColor"/>
+          </svg>
+        `;
+      }
+      return `
+        <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M7.5 12.5V9.8A4.5 4.5 0 0 1 12 5.3a4.5 4.5 0 0 1 4.5 4.5v2.7" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M6.7 12.5h10.6a1.7 1.7 0 0 1 1.7 1.7v2.3a1.7 1.7 0 0 1-1.7 1.7H6.7A1.7 1.7 0 0 1 5 16.5v-2.3a1.7 1.7 0 0 1 1.7-1.7Z" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="12" cy="15.3" r="1.1" fill="currentColor"/>
+        </svg>
+      `;
+    }
+
+    function applyTheme(property) {
+      const root = document.documentElement;
+      Object.entries(themes[property]).forEach(([key, value]) => {
+        root.style.setProperty(key, value);
+      });
+    }
+
+    function formatMarkdown(text) {
+      let html = escapeHtml(text);
+      html = html.replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>");
+      html = html.replace(/(?:^|\n)- (.+)/g, "<br>&bull; $1");
+      const paragraphs = html
+        .split(/\n{2,}/)
+        .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
+        .join("");
+      return paragraphs || "<p></p>";
+    }
+
+    function formatBriefContent(text) {
+      let html = escapeHtml(text.trim());
+      html = html.replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>");
+      html = html.replace(/\bWARNING\b/g, '<span class="warning-inline">WARNING</span>');
+      html = html.replace(/(?:^|\n)- (.+)/g, "<br>&bull; $1");
+      return html
+        .split(/\n{2,}/)
+        .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
+        .join("");
+    }
+
+    function getCurrentChatHistory(panelType = activeTab) {
+      chatHistory = chatStore[panelType] || [];
+      return chatHistory;
+    }
+
+    function setCurrentChatHistory(panelType, history) {
+      chatStore[panelType] = history;
+      if (panelType === activeTab) {
+        chatHistory = history;
+      }
+    }
+
+    function renderWelcome(panelType) {
+      const area = messageAreas[panelType];
+      const config = propertyConfig[currentProperty];
+      const isSupport = panelType === "support";
+      const chips = isSupport ? config.supportChips || [] : config.chips;
+      const title = isSupport ? "How can I help you tonight?" : config.heroTitle;
+      const copy = isSupport
+        ? "I can help with late-night property questions, practical support, emergency guidance, WiFi, meal timing, and local suggestions using the curated guest guide."
+        : config.heroCopy;
+
+      area.innerHTML = `
+        <div class="welcome-state">
+          <div class="welcome-inner">
+            <div class="hero-icon">${getIconSvg(isSupport ? "leaf" : config.icon, 34)}</div>
+            <h2 class="welcome-title">${title}</h2>
+            <p class="welcome-copy">${copy}</p>
+            <div class="chips">
+              ${chips.map((chip) => `<button class="chip" type="button" data-panel="${panelType}">${chip}</button>`).join("")}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function scrollToBottom(panelType = activeTab) {
+      const area = messageAreas[panelType];
+      requestAnimationFrame(() => {
+        area.scrollTop = area.scrollHeight;
+      });
+    }
+
+    function createMessageRow(role, html) {
+      const row = document.createElement("div");
+      row.className = `message-row ${role}`;
+
+      const bubble = document.createElement("div");
+      bubble.className = "message-bubble";
+      bubble.innerHTML = html;
+      row.appendChild(bubble);
+
+      return { row, bubble };
+    }
+
+    function createSourceTags(sources = []) {
+      const tags = document.createElement("div");
+      tags.className = "source-tags";
+      const sourceList = sources.length ? sources : ["No matching source snippet"];
+      tags.innerHTML = sourceList
+        .map((source) => `<span class="source-tag">${escapeHtml(source)}</span>`)
+        .join("");
+      return tags;
+    }
+
+    function addUserMessage(content, panelType) {
+      const area = messageAreas[panelType];
+      if (!chatStore[panelType].length) {
+        area.innerHTML = "";
+      }
+      const { row } = createMessageRow("user", formatMarkdown(content));
+      area.appendChild(row);
+      scrollToBottom(panelType);
+    }
+
+    function showTypingIndicator(panelType) {
+      const area = messageAreas[panelType];
+      const row = document.createElement("div");
+      row.className = "message-row assistant";
+      row.id = `${panelType}TypingIndicator`;
+      row.innerHTML = `
+        <div class="typing-indicator">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </div>
+      `;
+      area.appendChild(row);
+      scrollToBottom(panelType);
+    }
+
+    function removeTypingIndicator(panelType) {
+      const indicator = document.getElementById(`${panelType}TypingIndicator`);
+      if (indicator) {
+        indicator.remove();
+      }
+    }
+
+    function createAssistantShell(panelType, sources) {
+      removeTypingIndicator(panelType);
+      const area = messageAreas[panelType];
+      const { row, bubble } = createMessageRow("assistant", "<p></p>");
+      const sourceTags = createSourceTags(sources);
+      row.appendChild(sourceTags);
+      area.appendChild(row);
+      activeAssistantBubble = bubble;
+      activeAssistantSources = sourceTags;
+      activeAssistantText = "";
+      activePanelType = panelType;
+      scrollToBottom(panelType);
+    }
+
+    function finalizeAssistantMessage(panelType, isError = false) {
+      if (activeAssistantSources) {
+        activeAssistantSources.classList.add("visible");
+      }
+      setCurrentChatHistory(panelType, [
+        ...chatStore[panelType],
+        {
+          role: "assistant",
+          content: activeAssistantText || (isError ? "There was a problem completing that response." : "")
+        }
+      ]);
+      activeAssistantBubble = null;
+      activeAssistantSources = null;
+      activeAssistantText = "";
+      activePanelType = panelType;
+      setStreamingState(false, panelType);
+      scrollToBottom(panelType);
+    }
+
+    function setStreamingState(streaming, panelType = activeTab) {
+      isStreaming = streaming;
+      Object.values(sendButtons).forEach((button) => {
+        button.disabled = streaming;
+      });
+      if (!streaming) {
+        return;
+      }
+      activeTab = panelType;
+    }
+
+    async function authenticate() {
+      const passwordInput = document.getElementById("passwordInput");
+      const authButton = document.getElementById("authButton");
+      const authCard = document.getElementById("authCard");
+      const authError = document.getElementById("authError");
+      const enteredPassword = passwordInput.value.trim();
+
+      if (!enteredPassword) {
+        authError.textContent = "Enter the interview demo password";
+        authError.classList.add("visible");
+        authCard.classList.remove("shake");
+        void authCard.offsetWidth;
+        authCard.classList.add("shake");
+        return;
+      }
+
+      authButton.disabled = true;
+      authButton.textContent = "Checking...";
+      authError.classList.remove("visible");
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            messages: [{ role: "user", content: "__auth_probe__" }],
+            property: "pierre",
+            password: enteredPassword
+          })
+        });
+
+        if (response.status === 401) {
+          throw new Error("Incorrect password");
+        }
+
+        if (!response.ok) {
+          throw new Error("Unable to authenticate right now");
+        }
+
+        password = enteredPassword;
+        document.getElementById("authOverlay").classList.add("hidden");
+        setTimeout(() => {
+          document.getElementById("authOverlay").style.display = "none";
+        }, 220);
+        initializeApp();
+      } catch (error) {
+        authError.textContent = error.message || "Incorrect password";
+        authError.classList.add("visible");
+        authCard.classList.remove("shake");
+        void authCard.offsetWidth;
+        authCard.classList.add("shake");
+      } finally {
+        authButton.disabled = false;
+        authButton.textContent = "Access";
+      }
+    }
+
+    function updateAuthCard() {
+      const config = propertyConfig[currentProperty];
+      document.getElementById("authTitle").textContent = config.authTitle;
+      document.getElementById("authSubtitle").textContent = config.authSubtitle;
+    }
+
+    function setActivePanel(tabName) {
+      activeTab = tabName;
+      Object.entries(panels).forEach(([name, panel]) => {
+        panel.classList.toggle("active", name === tabName);
+      });
+      Object.entries(tabs).forEach(([name, tab]) => {
+        tab.classList.toggle("active", name === tabName);
+      });
+    }
+
+    function resetBriefOutput() {
+      window._briefText = "";
+      const config = propertyConfig[currentProperty];
+      document.getElementById("briefOutput").innerHTML = `
+        <div class="brief-empty">
+          <div>
+            <div class="hero-icon">${getIconSvg("spark", 34)}</div>
+            <h3 class="welcome-title" style="font-size: 32px; margin-bottom: 10px;">${config.briefEmptyTitle}</h3>
+            <p class="welcome-copy" style="max-width: 560px;">${config.briefEmptyCopy}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function clearChatState() {
+      setCurrentChatHistory("copilot", []);
+      setCurrentChatHistory("support", []);
+      chatHistory = [];
+      renderWelcome("copilot");
+      renderWelcome("support");
+      inputs.copilot.value = "";
+      inputs.support.value = "";
+      autoResize(inputs.copilot);
+      autoResize(inputs.support);
+    }
+
+    function renderPropertyUi() {
+      const config = propertyConfig[currentProperty];
+      document.getElementById("noticeText").textContent = config.notice;
+      document.getElementById("roomType").placeholder = config.briefPlaceholder;
+      document.querySelector(".support-title").textContent = config.supportHeroTitle;
+      document.querySelector(".support-subtitle").textContent = config.supportHeroSubtitle;
+      updateAuthCard();
+
+      document.getElementById("pierreBtn").classList.toggle("active", currentProperty === "pierre");
+      document.getElementById("amaBtn").classList.toggle("active", currentProperty === "ama");
+
+      const supportTab = tabs.support;
+      supportTab.classList.toggle("hidden", currentProperty !== "ama");
+      supportTab.classList.toggle("highlighted", currentProperty === "ama");
+
+      if (currentProperty !== "ama" && activeTab === "support") {
+        setActivePanel("copilot");
+      }
+
+      clearChatState();
+      resetBriefOutput();
+    }
+
+    function switchProperty(property) {
+      if (isStreaming || currentProperty === property) {
+        return;
+      }
+      currentProperty = property;
+      applyTheme(property);
+      renderPropertyUi();
+    }
+
+    function askQuestion(text, panelType = "copilot") {
+      const input = inputs[panelType];
+      input.value = text;
+      autoResize(input);
+      sendMessage(panelType);
+    }
+
+    async function sendMessage(panelType = activeTab) {
+      if (isStreaming) {
+        return;
+      }
+
+      const input = inputs[panelType];
+      const text = input.value.trim();
+      if (!text) {
+        return;
+      }
+
+      const history = [...chatStore[panelType], { role: "user", content: text }];
+      setCurrentChatHistory(panelType, history);
+      input.value = "";
+      autoResize(input);
+      addUserMessage(text, panelType);
+      showTypingIndicator(panelType);
+      setStreamingState(true, panelType);
+
+      try {
+        await streamChat(panelType);
+      } catch (error) {
+        removeTypingIndicator(panelType);
+        createAssistantShell(panelType, ["System Error"]);
+        activeAssistantText = `I hit an error: ${error.message || "Unable to complete the response."}`;
+        activeAssistantBubble.innerHTML = formatMarkdown(activeAssistantText);
+        finalizeAssistantMessage(panelType, true);
+      }
+    }
+
+    async function streamChat(panelType) {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          messages: chatStore[panelType],
+          property: currentProperty,
+          password
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = response.status === 401 ? "Session expired. Refresh and re-enter the password." : "The assistant could not complete that request.";
+        throw new Error(errorText);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let buffer = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) {
+          break;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split("\n\n");
+        buffer = events.pop() || "";
+
+        for (const event of events) {
+          if (!event.trim()) {
+            continue;
+          }
+
+          const dataLine = event
+            .split("\n")
+            .find((line) => line.startsWith("data: "));
+
+          if (!dataLine) {
+            continue;
+          }
+
+          let payload;
+          try {
+            payload = JSON.parse(dataLine.slice(6));
+          } catch (error) {
+            continue;
+          }
+
+          if (payload.type === "sources") {
+            createAssistantShell(panelType, payload.sources || []);
+          } else if (payload.type === "text") {
+            if (!activeAssistantBubble) {
+              createAssistantShell(panelType, []);
+            }
+            activeAssistantText += payload.content || "";
+            activeAssistantBubble.innerHTML = formatMarkdown(activeAssistantText);
+            scrollToBottom(panelType);
+          } else if (payload.type === "error") {
+            if (!activeAssistantBubble) {
+              createAssistantShell(panelType, ["System Error"]);
+            }
+            activeAssistantText = payload.content || "The assistant encountered an error.";
+            activeAssistantBubble.innerHTML = formatMarkdown(activeAssistantText);
+            finalizeAssistantMessage(panelType, true);
+            return;
+          } else if (payload.type === "done") {
+            finalizeAssistantMessage(panelType);
+            return;
+          }
+        }
+      }
+
+      if (buffer.trim()) {
+        const lines = buffer.split("\n");
+        const dataLine = lines.find((line) => line.startsWith("data: "));
+        if (dataLine) {
+          try {
+            const payload = JSON.parse(dataLine.slice(6));
+            if (payload.type === "done") {
+              finalizeAssistantMessage(panelType);
+              return;
+            }
+          } catch (error) {
+          }
+        }
+      }
+
+      finalizeAssistantMessage(panelType);
+    }
+
+    async function generateBrief() {
+      const guestData = {
+        name: document.getElementById("guestName").value.trim(),
+        occasion: document.getElementById("occasion").value.trim(),
+        arrival: document.getElementById("arrival").value.trim(),
+        departure: document.getElementById("departure").value.trim(),
+        room_type: document.getElementById("roomType").value.trim(),
+        num_guests: document.getElementById("numGuests").value.trim(),
+        dietary: document.getElementById("dietary").value.trim(),
+        preferences: document.getElementById("preferences").value.trim(),
+        past_stays: document.getElementById("pastStays").value.trim(),
+        special_requests: document.getElementById("specialRequests").value.trim(),
+        notes: document.getElementById("additionalNotes").value.trim()
+      };
+
+      if (!guestData.name) {
+        document.getElementById("guestName").focus();
+        return;
+      }
+
+      const output = document.getElementById("briefOutput");
+      output.innerHTML = `
+        <div class="brief-loading">
+          <div>
+            <div class="spinner"></div>
+            <h3 class="welcome-title" style="font-size: 28px; margin-bottom: 10px;">Generating brief for ${escapeHtml(guestData.name)}...</h3>
+            <p class="welcome-copy" style="max-width: 540px;">Using ${currentProperty === "pierre" ? "The Pierre" : "amã Stays"} prompt structure, Groq LLaMA 3.3 70B, and the selected property context.</p>
+          </div>
+        </div>
+      `;
+
+      const button = document.getElementById("generateBriefBtn");
+      button.disabled = true;
+      button.textContent = "Generating...";
+
+      try {
+        const response = await fetch("/api/brief", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            guest_data: guestData,
+            property: currentProperty,
+            password
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("Unable to generate the brief.");
+        }
+
+        const data = await response.json();
+        renderBrief(data.brief, guestData);
+      } catch (error) {
+        output.innerHTML = `
+          <div class="brief-empty">
+            <div>
+              <div class="hero-icon">${getIconSvg("warning", 34)}</div>
+              <h3 class="welcome-title" style="font-size: 28px; margin-bottom: 10px;">Brief generation failed</h3>
+              <p class="welcome-copy" style="max-width: 520px;">${escapeHtml(error.message || "There was a problem contacting the backend.")}</p>
+            </div>
+          </div>
+        `;
+      } finally {
+        button.disabled = false;
+        button.textContent = "Generate Brief";
+      }
+    }
+
+    function parseBriefSections(briefText) {
+      const matches = [...briefText.matchAll(/^##\s+(.+)$/gm)];
+      if (!matches.length) {
+        return [];
+      }
+
+      return matches.map((match, index) => {
+        const title = match[1].trim();
+        const bodyStart = match.index + match[0].length;
+        const bodyEnd = index + 1 < matches.length ? matches[index + 1].index : briefText.length;
+        const body = briefText.slice(bodyStart, bodyEnd).trim();
+        return { title, body };
+      });
+    }
+
+    function getSectionAccent(sectionTitle) {
+      const map = currentProperty === "pierre"
+        ? {
+            "FRONT DESK": "#c9a96e",
+            "CONCIERGE": "#64b8b8",
+            "FOOD & BEVERAGE": "#dfac47",
+            "HOUSEKEEPING": "#9c86ff",
+            "WELCOME LETTER": "#6aa0ff"
+          }
+        : {
+            "PROPERTY SETUP": "#8fad5a",
+            "MEAL PREPARATION": "#dfac47",
+            "LOCAL RECOMMENDATIONS": "#64b8b8",
+            "WELCOME NOTE": "#c9a96e"
+          };
+      return map[sectionTitle] || getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+    }
+
+    function renderBrief(briefText, guestData) {
+      window._briefText = briefText;
+      const output = document.getElementById("briefOutput");
+      const sections = parseBriefSections(briefText);
+      const dietary = guestData.dietary || "";
+
+      const metaBits = [
+        guestData.occasion ? `Occasion: ${guestData.occasion}` : "",
+        guestData.arrival ? `Arrival: ${guestData.arrival}` : "",
+        guestData.departure ? `Departure: ${guestData.departure}` : "",
+        guestData.room_type ? `Accommodation: ${guestData.room_type}` : "",
+        guestData.num_guests ? `Guests: ${guestData.num_guests}` : ""
+      ].filter(Boolean);
+
+      const headerHtml = `
+        <div class="brief-header">
+          <div>
+            <h3 class="brief-title">${escapeHtml(guestData.name || "Guest Brief")}</h3>
+            <div class="brief-meta">
+              <span class="meta-pill">${currentProperty === "pierre" ? "The Pierre Brief" : "Serenity Bungalow Brief"}</span>
+              ${metaBits.map((bit) => `<span class="meta-pill">${escapeHtml(bit)}</span>`).join("")}
+            </div>
+          </div>
+          <button class="copy-btn" id="copyBriefBtn" type="button">Copy All</button>
+        </div>
+      `;
+
+      const allergyHtml = dietary
+        ? `
+          <div class="allergy-banner">
+            ${getIconSvg("warning", 24)}
+            <div>WARNING ALLERGY/DIETARY: ${escapeHtml(dietary)} — Notify all departments immediately</div>
+          </div>
+        `
+        : "";
+
+      const sectionsHtml = sections.length
+        ? sections.map((section, index) => {
+            const accent = getSectionAccent(section.title);
+            const isAlertSection = dietary && /(FOOD & BEVERAGE|MEAL PREPARATION)/.test(section.title);
+            return `
+              <article class="section-card ${isAlertSection ? "alert-section" : ""}" style="border-left-color:${accent}; --delay:${index * 80}ms;">
+                <h4 class="section-title">${escapeHtml(section.title)}</h4>
+                <div class="section-body">${formatBriefContent(section.body)}</div>
+              </article>
+            `;
+          }).join("")
+        : `
+          <article class="section-card" style="--delay:0ms;">
+            <h4 class="section-title">Generated Brief</h4>
+            <div class="section-body">${formatBriefContent(briefText)}</div>
+          </article>
+        `;
+
+      const footerHtml = `
+        <div class="brief-footer">
+          Proof of concept note: this demo uses manual guest inputs plus curated property context. A production version would pull live booking data, loyalty history, service preferences, and operational notes from IHCL systems.
+        </div>
+      `;
+
+      output.innerHTML = `
+        ${headerHtml}
+        ${allergyHtml}
+        <div class="brief-sections">${sectionsHtml}</div>
+        ${footerHtml}
+      `;
+
+      document.getElementById("copyBriefBtn").addEventListener("click", copyBrief);
+    }
+
+    async function copyBrief() {
+      if (!window._briefText) {
+        return;
+      }
+      const button = document.getElementById("copyBriefBtn");
+      try {
+        await navigator.clipboard.writeText(window._briefText);
+        button.textContent = "Copied!";
+        setTimeout(() => {
+          button.textContent = "Copy All";
+        }, 2000);
+      } catch (error) {
+        button.textContent = "Copy Failed";
+        setTimeout(() => {
+          button.textContent = "Copy All";
+        }, 2000);
+      }
+    }
+
+    function handleKeydown(event, panelType) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage(panelType);
+      }
+    }
+
+    function autoResize(element) {
+      element.style.height = "auto";
+      element.style.height = Math.min(element.scrollHeight, 120) + "px";
+    }
+
+    function initializeApp() {
+      applyTheme(currentProperty);
+      renderPropertyUi();
+      setActivePanel("copilot");
+    }
+
+    document.getElementById("authButton").addEventListener("click", authenticate);
+    document.getElementById("passwordInput").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        authenticate();
+      }
+    });
+
+    document.getElementById("pierreBtn").addEventListener("click", () => switchProperty("pierre"));
+    document.getElementById("amaBtn").addEventListener("click", () => switchProperty("ama"));
+
+    tabs.copilot.addEventListener("click", () => setActivePanel("copilot"));
+    tabs.brief.addEventListener("click", () => setActivePanel("brief"));
+    tabs.support.addEventListener("click", () => {
+      if (currentProperty === "ama") {
+        setActivePanel("support");
+      }
+    });
+
+    messageAreas.copilot.addEventListener("click", (event) => {
+      const chip = event.target.closest(".chip");
+      if (chip) {
+        askQuestion(chip.textContent.trim(), chip.dataset.panel || "copilot");
+      }
+    });
+
+    messageAreas.support.addEventListener("click", (event) => {
+      const chip = event.target.closest(".chip");
+      if (chip) {
+        askQuestion(chip.textContent.trim(), chip.dataset.panel || "support");
+      }
+    });
+
+    inputs.copilot.addEventListener("input", (event) => autoResize(event.target));
+    inputs.support.addEventListener("input", (event) => autoResize(event.target));
+    inputs.copilot.addEventListener("keydown", (event) => handleKeydown(event, "copilot"));
+    inputs.support.addEventListener("keydown", (event) => handleKeydown(event, "support"));
+    sendButtons.copilot.addEventListener("click", () => sendMessage("copilot"));
+    sendButtons.support.addEventListener("click", () => sendMessage("support"));
+    document.getElementById("generateBriefBtn").addEventListener("click", generateBrief);
+
+    updateAuthCard();
+    resetBriefOutput();
+    renderWelcome("copilot");
+    renderWelcome("support");
+    autoResize(inputs.copilot);
+    autoResize(inputs.support);
+  </script>
+</body>
+</html>
