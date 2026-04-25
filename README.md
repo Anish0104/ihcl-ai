@@ -17,7 +17,7 @@ This proof of concept is intentionally grounded in two contrasting IHCL properti
   - Staff co-pilot Q&A
   - Pre-arrival guest brief generation
   - Guest-facing support for off-hours operational questions
-
+  - 
 ## Core Demo Insight
 The star of the demo is the property switcher.
 
