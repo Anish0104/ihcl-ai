@@ -128,6 +128,14 @@ ihcl-ai/
 ```
 
 ## Quick Start
+If you already have dependencies installed, `.env` configured, and the Chroma collections built, you can jump straight to:
+
+```bash
+python -m uvicorn backend.main:app --reload --port 8000
+```
+
+Then open `http://127.0.0.1:8000`.
+
 ### 1. Create and activate a virtual environment
 ```bash
 python3.12 -m venv venv
@@ -166,19 +174,31 @@ This builds the Pierre and amã ChromaDB collections from the markdown source fi
 
 ### 5. Run the app
 ```bash
-uvicorn backend.main:app --reload --port 8000
+python -m uvicorn backend.main:app --reload --port 8000
 ```
 
 Open:
 
 ```text
-http://localhost:8000
+http://127.0.0.1:8000
 ```
 
 Login password:
 
 ```text
 ihcl2024
+```
+
+Optional smoke test:
+
+```bash
+curl http://127.0.0.1:8000/api/health
+```
+
+Expected response:
+
+```json
+{"status":"ok","service":"IHCL AI Staff Intelligence Suite","groq_configured":true}
 ```
 
 ## Demo Flow
